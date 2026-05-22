@@ -92,10 +92,10 @@
         <div class="rules-card">
             <div class="rules-header">🔥 REGRAS DO JOGO</div>
             <div class="rules-body">
-                <div class="rules-section"><h4>🍾 1. O Giro</h4><p>A garrafa deve apontar exatamente para o nome. Se parar fora do alvo, passou a vez!</p></div>
-                <div class="rules-section"><h4>🃏 2. Baralho</h4><p>Os desafios esquentam conforme as rodadas passam.</p></div>
-                <div class="rules-section"><h4>🔄 3. Regra do Azarado</h4><p>Caiu 2x seguidas? Paga mico automático!</p></div>
-                <div class="rules-section"><h4>🏳️ 4. Desistir</h4><p>Ao desistir, você é eliminado e cumpre punição.</p></div>
+                <div class="rules-section"><h4>🍾 1. O Giro</h4><p>A boca da garrafa deve apontar para o nome ou carta. Se parar fora do alvo, passa a vez!</p></div>
+                <div class="rules-section"><h4>🃏 2. Baralho</h4><p>Os desafios ficam sérios após 12 rodadas.</p></div>
+                <div class="rules-section"><h4>🔄 3. Azarado</h4><p>Caiu 2x? Paga mico automático!</p></div>
+                <div class="rules-section"><h4>🏳️ 4. Eliminação</h4><p>Se desistir, você sai da roda e paga punição.</p></div>
             </div>
             <button class="btn-main" style="background:#00a884; margin:0;" onclick="toggleRules(false)">ENTENDI!</button>
         </div>
@@ -113,9 +113,9 @@
     </div>
 
     <script>
-        const cLeve = ["VERDADE: Qual seu primeiro beijo?", "DESAFIO: Imite um gato!", "VERDADE: Mania irritante?"];
-        const cMedio = ["VERDADE: Quem beijaria aqui?", "DESAFIO: 'Oi sumido' no Whats."];
-        const cSafado = ["DESAFIO: Beijo de língua!", "DESAFIO: Mordida na orelha."];
+        const cLeve = ["VERDADE: Qual seu primeiro beijo?", "DESAFIO: Imite um gato!", "VERDADE: Mania irritante?", "DESAFIO: Dance sem música!"];
+        const cMedio = ["VERDADE: Quem beijaria aqui?", "DESAFIO: 'Oi sumido' no Whats.", "VERDADE: Maior segredo?"];
+        const cSafado = ["DESAFIO: Beijo de língua!", "DESAFIO: Mordida na orelha!", "DESAFIO: Selinho de 5 seg."];
         const punicoes = ["PUNIÇÃO: Beba água!", "PUNIÇÃO: 20 flexões!", "PUNIÇÃO: Mico da roda!"];
 
         let pCount = 4, rotation = 0, busy = false, validTurns = 0, lastId = null;
@@ -167,11 +167,11 @@
                 let angle = rotation % 360;
                 let sel = null;
 
-                // PRECISÃO REFORÇADA: Só aceita se parar RETO no nome (margem de 20 graus)
-                if (angle >= 350 || angle < 10) sel = 1;      
-                else if (angle >= 80 && angle < 100) sel = 2;  
-                else if (angle >= 170 && angle < 190) sel = 3; 
-                else if (angle >= 260 && angle < 280) sel = 4; 
+                // MARGEM CALIBRADA PARA 50 GRAUS DE ACERTO (25 pra cada lado)
+                if (angle >= 335 || angle < 25) sel = 1;       // Cima
+                else if (angle >= 65 && angle < 115) sel = 2;   // Direita
+                else if (angle >= 155 && angle < 205) sel = 3;  // Baixo
+                else if (angle >= 245 && angle < 295) sel = 4;  // Esquerda
 
                 const slot = sel ? document.getElementById('slot-'+sel) : null;
 
@@ -180,14 +180,14 @@
                     slot.classList.add('active');
                     if (sel === lastId) {
                         document.getElementById('m-header').innerText = "AZARADO!";
-                        document.getElementById('m-text').innerText = "Caiu 2x! Imite uma galinha!";
+                        document.getElementById('m-text').innerText = "Caiu 2x seguidas! Pague o mico da galinha!";
                         document.getElementById('btn-desistir').style.display = 'none';
                         document.getElementById('modal').style.display = 'flex';
                     }
                     lastId = sel;
                 } else {
                     document.getElementById('m-header').innerText = "PASSOU A VEZ";
-                    document.getElementById('m-text').innerText = "A garrafa não apontou para ninguém! Gira de novo.";
+                    document.getElementById('m-text').innerText = "A garrafa não apontou com precisão. Gira de novo!";
                     document.getElementById('btn-desistir').style.display = 'none';
                     document.getElementById('modal').style.display = 'flex';
                     lastId = null;
@@ -212,7 +212,7 @@
         function desistir() {
             document.getElementById('m-header').innerText = "ELIMINADO!";
             const p = punicoes[Math.floor(Math.random() * punicoes.length)];
-            document.getElementById('m-text').innerText = "Você saiu do jogo! Punição final: " + p.split(':')[1];
+            document.getElementById('m-text').innerText = "Eliminado! Cumpra a punição: " + p.split(':')[1];
             
             const slotAtivo = document.querySelector('.player-slot.active');
             if (slotAtivo) {
@@ -223,7 +223,7 @@
             
             const restantes = Array.from(document.querySelectorAll('.player-slot')).filter(s => s.style.display === 'flex');
             if (restantes.length <= 1) {
-                setTimeout(() => { alert("Temos um vencedor!"); location.reload(); }, 2000);
+                setTimeout(() => { alert("Fim de jogo! Reiniciando..."); location.reload(); }, 3000);
             }
         }
 
